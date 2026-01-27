@@ -23,6 +23,7 @@ class InventoryItem extends Model
         'unit_price',
         'unit',
         'expiration_date',
+        'user_id',
     ];
 
     public function stockLocation()
@@ -33,5 +34,16 @@ class InventoryItem extends Model
     public function shoppingListItems()
     {
         return $this->hasMany(ShoppingListItem::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->user_id) {
+                throw new \InvalidArgumentException('User ID is required');
+            }
+        });
     }
 }
