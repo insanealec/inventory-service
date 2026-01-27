@@ -228,6 +228,13 @@ The Inventory Management System is a comprehensive solution that enables users t
     - `created_at` (timestamp)
     - `updated_at` (timestamp)
 
+### Database Access
+
+- All database queries will be performed using **Laravel Eloquent** for data access
+- Eloquent models will provide convenient methods for CRUD operations
+- Relationships between entities will be defined using Eloquent model relationships
+- Query optimization will be implemented using Eloquent's built-in features like eager loading
+
 ### Relationships
 
 - Users → Stock Locations (one-to-many)
@@ -263,7 +270,7 @@ The Inventory Management System is a comprehensive solution that enables users t
 
 ### Near-term Features (6-12 months)
 
-- Mobile application development
+- MCP/AI integration
 - Export/import capabilities for inventory data
 - Advanced reporting features with charts and analytics
 - Integration with smart home devices
@@ -274,12 +281,12 @@ The Inventory Management System is a comprehensive solution that enables users t
 - Cloud backup and synchronization
 - Voice assistant integration
 - AI-powered item recommendations
-- Barcode scanning support
+- IoT device integration for real-time inventory tracking
 - Integration with e-commerce platforms
 
 ### Long-term Vision (2+ years)
 
-- IoT device integration for real-time inventory tracking
+- Barcode scanning support
 - Predictive analytics for inventory management
 - Integration with grocery delivery services
 - Cross-platform inventory sharing features
