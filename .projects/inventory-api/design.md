@@ -73,6 +73,33 @@ The Inventory Management System is a comprehensive solution that enables users t
     - Relationships between entities (one-to-many, many-to-many)
     - Proper indexing for performance
 
+### User Interface
+
+The user interface will follow a standard web application structure with:
+
+- **Navigation**: Main sidebar navigation with quick access to key sections including Inventory and Shopping Lists
+- **Dashboard**: Primary landing page showing recently added items, low stock alerts, and other important metrics
+- **Inventory Management**: Detailed views for managing inventory items, stock locations, and expiration tracking
+- **Shopping Lists**: Creation, management, and completion tracking of shopping lists with categorization
+
+The sidebar navigation will provide quick access to:
+
+- Inventory items list
+- Stock locations management
+- Shopping lists
+- Shopping categories
+- Dashboard
+
+### Dashboard Page
+
+The system will include a comprehensive dashboard page that provides a quick overview of key inventory information. The dashboard will display:
+
+1. **Recently Added Inventory Items**: Shows the most recently added inventory items with timestamps and basic details
+2. **Recently Added Shopping List Items**: Shows the most recently added shopping list items with timestamps and basic details
+3. **Low Stock Items**: Displays inventory items that are below their configured reorder point
+
+This dashboard will be the primary landing page for authenticated users and will provide immediate insights into the most critical aspects of inventory management.
+
 ## API Endpoints
 
 ### Inventory Items
