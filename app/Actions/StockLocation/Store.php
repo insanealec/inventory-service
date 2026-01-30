@@ -16,7 +16,6 @@ class Store
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:stock_locations,name',
             'description' => 'nullable|string',
-            'address' => 'nullable|string',
         ]);
 
         $location = StockLocation::create($validated);

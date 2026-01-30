@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shopping_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('store_section')->nullable();
             $table->string('color')->nullable();
             $table->integer('sort_order')->default(0);

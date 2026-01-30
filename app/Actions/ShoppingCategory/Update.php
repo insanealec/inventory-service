@@ -15,6 +15,9 @@ class Update
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:shopping_categories,name,' . $shoppingCategory->id,
+            'store_section' => 'nullable|string|max:255',
+            'color' => 'nullable|string|max:7',
+            'sort_order' => 'nullable|integer',
             'description' => 'nullable|string',
         ]);
 
