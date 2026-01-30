@@ -7,6 +7,11 @@ use App\Models\ShoppingCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use App\Actions\ShoppingCategory\Index;
+use App\Actions\ShoppingCategory\Store;
+use App\Actions\ShoppingCategory\Show;
+use App\Actions\ShoppingCategory\Update;
+use App\Actions\ShoppingCategory\Destroy;
 
 class ShoppingCategoryController extends Controller
 {
@@ -15,24 +20,7 @@ class ShoppingCategoryController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = ShoppingCategory::query();
-
-        // Apply search filter
-        if ($request->has('search') && $request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('store_section', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        // Apply sorting
-        $sortField = $request->get('sort', 'sort_order');
-        $sortDirection = $request->get('direction', 'asc');
-        $query->orderBy($sortField, $sortDirection);
-
-        // Apply pagination
-        $perPage = $request->get('per_page', 15);
-        $categories = $query->paginate($perPage);
+        $categories = Index::run($request);
 
         return response()->json($categories);
     }
@@ -43,15 +31,7 @@ class ShoppingCategoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:shopping_categories,name',
-                'store_section' => 'nullable|string|max:255',
-                'color' => 'nullable|string|max:7',
-                'sort_order' => 'nullable|integer|min:0',
-                'user_id' => 'required|exists:users,id',
-            ]);
-
-            $category = ShoppingCategory::create($validated);
+            $category = Store::run($request);
 
             return response()->json($category, 201);
         } catch (ValidationException $e) {
@@ -67,7 +47,9 @@ class ShoppingCategoryController extends Controller
      */
     public function show(ShoppingCategory $shoppingCategory): JsonResponse
     {
-        return response()->json($shoppingCategory->load(['user']));
+        $category = Show::run($shoppingCategory);
+
+        return response()->json($category);
     }
 
     /**
@@ -76,17 +58,9 @@ class ShoppingCategoryController extends Controller
     public function update(Request $request, ShoppingCategory $shoppingCategory): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:shopping_categories,name,' . $shoppingCategory->id,
-                'store_section' => 'nullable|string|max:255',
-                'color' => 'nullable|string|max:7',
-                'sort_order' => 'nullable|integer|min:0',
-                'user_id' => 'required|exists:users,id',
-            ]);
+            $category = Update::run($request, $shoppingCategory);
 
-            $shoppingCategory->update($validated);
-
-            return response()->json($shoppingCategory);
+            return response()->json($category);
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -107,10 +81,8 @@ class ShoppingCategoryController extends Controller
             ], 400);
         }
 
-        $shoppingCategory->delete();
+        $result = Destroy::run($shoppingCategory);
 
-        return response()->json([
-            'message' => 'Shopping category deleted successfully'
-        ]);
+        return response()->json($result);
     }
 }

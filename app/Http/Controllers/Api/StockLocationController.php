@@ -7,6 +7,11 @@ use App\Models\StockLocation;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use App\Actions\StockLocation\Index;
+use App\Actions\StockLocation\Store;
+use App\Actions\StockLocation\Show;
+use App\Actions\StockLocation\Update;
+use App\Actions\StockLocation\Destroy;
 
 class StockLocationController extends Controller
 {
@@ -15,25 +20,7 @@ class StockLocationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = StockLocation::query();
-
-        // Apply search filter
-        if ($request->has('search') && $request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('short_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        // Apply sorting
-        $sortField = $request->get('sort', 'name');
-        $sortDirection = $request->get('direction', 'asc');
-        $query->orderBy($sortField, $sortDirection);
-
-        // Apply pagination
-        $perPage = $request->get('per_page', 15);
-        $locations = $query->paginate($perPage);
+        $locations = Index::run($request);
 
         return response()->json($locations);
     }
@@ -44,14 +31,7 @@ class StockLocationController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:stock_locations,name',
-                'short_name' => 'required|string|max:50',
-                'description' => 'nullable|string',
-                'user_id' => 'required|exists:users,id',
-            ]);
-
-            $location = StockLocation::create($validated);
+            $location = Store::run($request);
 
             return response()->json($location, 201);
         } catch (ValidationException $e) {
@@ -67,7 +47,9 @@ class StockLocationController extends Controller
      */
     public function show(StockLocation $stockLocation): JsonResponse
     {
-        return response()->json($stockLocation->load(['user', 'inventoryItems']));
+        $location = Show::run($stockLocation);
+
+        return response()->json($location);
     }
 
     /**
@@ -76,16 +58,9 @@ class StockLocationController extends Controller
     public function update(Request $request, StockLocation $stockLocation): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:stock_locations,name,' . $stockLocation->id,
-                'short_name' => 'required|string|max:50',
-                'description' => 'nullable|string',
-                'user_id' => 'required|exists:users,id',
-            ]);
+            $location = Update::run($request, $stockLocation);
 
-            $stockLocation->update($validated);
-
-            return response()->json($stockLocation);
+            return response()->json($location);
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
@@ -106,10 +81,8 @@ class StockLocationController extends Controller
             ], 400);
         }
 
-        $stockLocation->delete();
+        $result = Destroy::run($stockLocation);
 
-        return response()->json([
-            'message' => 'Stock location deleted successfully'
-        ]);
+        return response()->json($result);
     }
 }
